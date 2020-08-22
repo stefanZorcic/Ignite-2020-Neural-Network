@@ -14,6 +14,7 @@ with open('demo_data.csv') as csvDataFile:
 import string
 import nltk
 from nltk.corpus import words
+import numpy as np
 
 nltk.download('words')
 nltk.download('punkt')
@@ -37,36 +38,50 @@ for i in range(2):
 
 
     word_list = words.words()
-    indices = [0] * 236736
-    i=0
+    indices = ['0'] * 236737
+
+    print(text)
+
+
+    z=0
 
     for i in range(int(len(text))):
-      try:
-        indices[word_list.index(text[i])] += 1
-      except ValueError:
-        i+=1;
-        indices.pop(i)
-        indices.append(i)
+        try:
+            o = (word_list.index(text[i]))
+            q = int(indices[o])
+            q+=1;
+            indices.pop(int(0-1))
+            indices.insert(int(o-1),str(q))
+            q=0
 
+        except ValueError:
+            indices.pop(236737-1)
+            z+=1
+            indices.append(str(z))
+
+    indices = np.array(indices)
+    #print(indices)
+    #print(indices)
 
     X.append(indices)
 
-print(X)
-print(Y)
 
+Y = np.array(Y)
+Y = np.reshape(Y,(-1,1))
+
+
+X = np.reshape(X[0],(-1,1))
+X1 = np.reshape(X[1],(-1,1))
+
+Y = Y.shape
+
+X = X.shape
+X1 = X1.shape
 
 from sklearn.neural_network import MLPClassifier
 
 classifier = MLPClassifier(hidden_layer_sizes=(1,1), max_iter=236736,activation = 'relu',solver='adam',random_state=1)
 
-classifier.fit(X, Y)
+print(classifier.fit([X], [Y[0]]))
 
-print(X)
-print(len(X[0]))
-
-for i in range(len(X)):
-    classifier.predict(X[i])
-
-print("END")
-
-
+print(classifier.predict([X1]))
