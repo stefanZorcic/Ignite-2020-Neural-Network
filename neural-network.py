@@ -90,7 +90,7 @@ classifier = MLPClassifier(hidden_layer_sizes=(100, ),  # EDIT CONTROLS HERE
                            learning_rate='constant',
                            learning_rate_init=0.001,
                            power_t=0.5,
-                           max_iter=200,
+                           max_iter=236737,
                            shuffle=True,
                            random_state=None,
                            tol=0.0001,
