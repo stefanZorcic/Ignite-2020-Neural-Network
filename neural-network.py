@@ -1,100 +1,115 @@
 import csv
-
-# input from the datasets
 temp=[0]*0
-#machine's guess
 X = [0]*0
-# answers to the test data
 Y = [0]*0
 
 
-# This is total lines of sentiment data
-inter = 10
 
-train = 5    # Number of how much of data is test data
+inter = 60
 
-# Reading in the CSV file
+train = 50 # Number of how much of data is test data
+
+
 with open('training_data.csv') as csvDataFile:
     csvReader = csv.reader(csvDataFile)
     for row in csvReader:
-        temp.append(row) # read in a row of input from the CSV file
+        temp.append(row)
 
-# Importing the libraries needed for sentiment analysis
 import string
-# Importing the Natural language toolkit module
 import nltk
 from nltk.corpus import words
+from nltk.corpus import stopwords
+from nltk.corpus import product_reviews_1 as pro
 import numpy as np
 
-# download the modules
 nltk.download('words')
 nltk.download('punkt')
-# Processing each sentence in the data, and teaching the machine
+nltk.download('stopwords')
+nltk.download('product_reviews_1')
+
+stop_words=set(stopwords.words('english'))
+
 for i in range(inter):
     indices=[0]*0
     # Text preprocessing
     text = str(temp[i+1][2])
-    #answer to the text
+
     if str(temp[i+1][3])=="1":
         Y.append(1)
     else:
         Y.append(0)
-    # Cleaning the text and tokenizing it
-    text = text.lower() # changing all characters to lower case
-    remove_digits = str.maketrans('', '', string.digits) # remove all non-alphabetical characters
+
+    text = text.lower()
+    remove_digits = str.maketrans('', '', string.digits)
     text = text.translate(remove_digits)
-    text = text.translate(str.maketrans('', '', string.punctuation)) # remove all punctuation
-    text = text.strip() # trim the string
-    text = nltk.word_tokenize(text) # tokenize the input string into words
+    text = text.translate(str.maketrans('', '', string.punctuation))
+    text = text.strip()
 
-    # words in the english dictionary
-    word_list = words.words()
-    # indices the words in the english dictionary
-    indices = ['0.01'] * 236737
+    word_tokens = nltk.word_tokenize(text)
 
+    filtered_sentence = [w for w in word_tokens if not w in stop_words]
+
+    filtered_sentence = []
+
+    for w in word_tokens:
+        if w not in stop_words:
+            filtered_sentence.append(w)
+
+    text = filtered_sentence
+
+    #text = nltk.word_tokenize(text)
+
+
+    word_list = pro.words()
+    indices = ['0.01'] * 73833
+
+    #print(text)
 
 
     z=0
-    #checking the number of times a word appears, and then incrementing it in our indices
-    for i in range(int(len(text))): # loop through the input list
-        #if word is in dictionary, increase its value in the indices
+
+    for i in range(int(len(text))):
         try:
             o = (word_list.index(text[i]))
             q = int(indices[o])
-            #position times frequency
-            q+=1*i;
+            q+=1.0*i;
             indices.pop(int(0-1))
             indices.insert(int(o-1),str(q))
             q=0
-        #If word isn't in dictionary, add to the back
+
         except ValueError:
-            indices.pop(236737-1)
-            #position times frequency
-            z+=1*i
+            indices.pop(73833-1)
+            z+=1.0*i
             indices.append(str(z))
-    #indices list is turned into an array
+
+    print(len(indices))
+    #indices = np.array(indices)
+    #print(indices)
+    #print(indices)
+
     indices = np.array(indices)
+    indices = indices.astype(np.float64)
 
     X.append(indices)
-#chaging the list of answers to an array of anaswer
+
 Y = np.array(Y)
 
 print(Y)
 
 print(Y)
-#The machine learning library!
+
 from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import classification_report,confusion_matrix,accuracy_score
-#defining of the neural network, E.G. Number of hidden layers and neurons per layer
-classifier = MLPClassifier(hidden_layer_sizes=(10,1 ),
-                           activation='tanh',
+
+classifier = MLPClassifier(hidden_layer_sizes=(10,10),
+                           activation='relu',
                            solver='adam',
-                           alpha=0.0001,
+                           alpha=0.05,
                            batch_size='auto',
-                           learning_rate='constant',
-                           learning_rate_init=0.001,
+                           learning_rate='adaptive',
+                           learning_rate_init=0.1,
                            power_t=0.5,
-                           max_iter=236737,
+                           max_iter=50,
                            shuffle=True,
                            random_state=None,
                            tol=0.0001,
@@ -108,19 +123,46 @@ classifier = MLPClassifier(hidden_layer_sizes=(10,1 ),
                            beta_2=0.999,
                            epsilon=1e-08,
                            n_iter_no_change=10,
-                           max_fun=15000)
+                           max_fun=1500)
 
-# Training the machine to learn to detect sentiment
-for i in range(train): # loop through all the training datasets
-    X_train=X[i]
-    X_train=X_train.astype(np.float64)
-    print(X_train)
-    print(classifier.fit([X_train], [Y[i]]))
+counter=0
+
+'''
+s=True
+
+while s:
+    for i in range(100):
+        X_train=X[i]
+        X_train=X_train.astype(np.float64)
+        #print(X_train)
+        print(counter,classifier.fit([X_train], [Y[i]]))
+        counter+=1;
+
+    if(input()=="x"):
+        s=False
+'''
+
+X_train=X
+#X_train=X_train.astype(np.float64)
+#print(X_train)
+
+print(X_train)
+print(Y)
+
+Y=np.array(Y)
+Y.shape
+print(Y)
+
+classifier.fit(X_train, Y)
+counter+=1;
+print("YYYAYYAYAYYAYAYYA")
+
+
+
 
 num = 0
 dem = 0
 
-# Predict sentiment verdict
 for i in range(inter-train):
     X_Test=X[i+train]
     X_Test=X_Test.astype(np.float64)
@@ -129,5 +171,59 @@ for i in range(inter-train):
         num+=1
     dem+=1
 
-# Output program accuracy as a percentage
+    print((int(classifier.predict([X_Test]))), int(Y[i+int(train)]))
+
 print(str(num/dem*100)+"% Accuracy")
+
+'''
+p=100;
+
+data=[0]*0
+
+with open('training_data.csv') as csvDataFile:
+    csvReader = csv.reader(csvDataFile)
+    for row in csvReader:
+        data.append(row)
+
+
+for i in range(inter):
+    indices=[0]*0
+    # Text preprocessing
+    text = str(data[i+1][2])
+
+    text = text.lower()
+    remove_digits = str.maketrans('', '', string.digits)
+    text = text.translate(remove_digits)
+    text = text.translate(str.maketrans('', '', string.punctuation))
+    text = text.strip()
+    text = nltk.word_tokenize(text)
+
+
+    word_list = words.words()
+    indices = ['0.01'] * 236737
+
+    z=0
+
+    for i in range(int(len(text))):
+        try:
+            o = (word_list.index(text[i]))
+            q = int(indices[o])
+            q+=1*i;
+            indices.pop(int(0-1))
+            indices.insert(int(o-1),str(q))
+            q=0
+
+        except ValueError:
+            indices.pop(236737-1)
+            z+=1*i
+            indices.append(str(z))
+
+    indices = np.array(indices)
+
+    data.append(indices)
+
+for i in range(p):
+    (int(classifier.predict([X_Test])))
+    
+
+'''
