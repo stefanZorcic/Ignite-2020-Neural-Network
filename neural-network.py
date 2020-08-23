@@ -1,15 +1,24 @@
+# TO DO
+# - Edit paremeters
+# - Change the input layer to be some function of frequency and position
+# - Comment everything
+# - Clean up code
+
+
 import csv
 temp=[0]*0
 X = [0]*0
 Y = [0]*0
 
-with open('demo_data.csv') as csvDataFile:
+inter = 4
+
+train = 2    # Number of how much of data is test data
+
+
+with open('training_data.csv') as csvDataFile:
     csvReader = csv.reader(csvDataFile)
     for row in csvReader:
         temp.append(row)
-
-
-
 
 import string
 import nltk
@@ -19,12 +28,12 @@ import numpy as np
 nltk.download('words')
 nltk.download('punkt')
 
-for i in range(2):
+for i in range(inter):
     indices=[0]*0
     # Text preprocessing
-    text = str(temp[i+1][0])
+    text = str(temp[i+1][2])
 
-    if str(temp[i+1][1])=="positive":
+    if str(temp[i+1][3])=="1":
         Y.append(1)
     else:
         Y.append(0)
@@ -40,7 +49,7 @@ for i in range(2):
     word_list = words.words()
     indices = ['0'] * 236737
 
-    print(text)
+    #print(text)
 
 
     z=0
@@ -65,23 +74,47 @@ for i in range(2):
 
     X.append(indices)
 
-
 Y = np.array(Y)
-Y = np.reshape(Y,(-1,1))
 
+print(Y)
 
-X = np.reshape(X[0],(-1,1))
-X1 = np.reshape(X[1],(-1,1))
-
-Y = Y.shape
-
-X = X.shape
-X1 = X1.shape
+print(Y)
 
 from sklearn.neural_network import MLPClassifier
 
-classifier = MLPClassifier(hidden_layer_sizes=(1,1), max_iter=236736,activation = 'relu',solver='adam',random_state=1)
+classifier = MLPClassifier(hidden_layer_sizes=(100, ),  # EDIT CONTROLS HERE
+                           activation='relu',
+                           solver='adam',
+                           alpha=0.0001,
+                           batch_size='auto',
+                           learning_rate='constant',
+                           learning_rate_init=0.001,
+                           power_t=0.5,
+                           max_iter=200,
+                           shuffle=True,
+                           random_state=None,
+                           tol=0.0001,
+                           verbose=False,
+                           warm_start=False,
+                           momentum=0.9,
+                           nesterovs_momentum=True,
+                           early_stopping=False,
+                           validation_fraction=0.1,
+                           beta_1=0.9,
+                           beta_2=0.999,
+                           epsilon=1e-08,
+                           n_iter_no_change=10,
+                           max_fun=15000)
 
-print(classifier.fit([X], [Y[0]]))
+for i in range(train):
+    X_train=X[i]
+    X_train=X_train.astype(np.float64)
+    print(X_train)
+    print(classifier.fit([X_train], [Y[i]]))
 
-print(classifier.predict([X1]))
+for i in range(inter-train):
+    X_Test=X[i+train]
+    X_Test=X_Test.astype(np.float64)
+    print(str(classifier.predict([X_Test])) + str(Y[i+int(train)]))
+
+print("END")
