@@ -5,9 +5,9 @@ Y = [0]*0
 
 u=0
 
-inter = 500
+inter = 10
 
-train = 450 # Number of how much of data is test data
+train = 5 # Number of how much of data is test data
 
 
 with open('training_data.csv') as csvDataFile:
@@ -98,7 +98,7 @@ print(Y)
 from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import classification_report,confusion_matrix,accuracy_score
 
-classifier = MLPClassifier(hidden_layer_sizes=(100,2),
+classifier = MLPClassifier(hidden_layer_sizes=(10,2),
                            activation='relu',
                            solver='lbfgs',
                            alpha=0.05,
@@ -184,7 +184,7 @@ nltk.download('product_reviews_1')
 
 stop_words=set(stopwords.words('english'))
 
-for i in range(600000):
+for i in range(5):
     indices=[0]*0
     # Text preprocessing
     text = str(temp[i+1][2])
@@ -238,7 +238,7 @@ print(X_train)
 
 
 for i in range(inter-train):
-    X_Test=X[i+1]
+    X_Test=X[i]
     X_Test=X_Test.astype(np.float64)
 
     ans = int(classifier.predict([X_Test]))
@@ -247,7 +247,7 @@ for i in range(inter-train):
 
     v = open('contestant_judgment.csv')
     r = csv.reader(v)
-    row0 = r.next()
+    row0 = next(r)
     row0.append('berry')
     for item in r:
         item.append(int(ans))
