@@ -1,18 +1,13 @@
-# TO DO
-# - Edit paremeters
-# - Change the input layer to be some function of frequency and position
-# - Comment everything
-# - Clean up code
-
-
 import csv
 temp=[0]*0
 X = [0]*0
 Y = [0]*0
 
-inter = 4
 
-train = 2    # Number of how much of data is test data
+
+inter = 3
+
+train = 1    # Number of how much of data is test data
 
 
 with open('training_data.csv') as csvDataFile:
@@ -47,7 +42,7 @@ for i in range(inter):
 
 
     word_list = words.words()
-    indices = ['0'] * 236737
+    indices = ['0.01'] * 236737
 
     #print(text)
 
@@ -58,14 +53,14 @@ for i in range(inter):
         try:
             o = (word_list.index(text[i]))
             q = int(indices[o])
-            q+=1;
+            q+=1*i;
             indices.pop(int(0-1))
             indices.insert(int(o-1),str(q))
             q=0
 
         except ValueError:
             indices.pop(236737-1)
-            z+=1
+            z+=1*i
             indices.append(str(z))
 
     indices = np.array(indices)
@@ -81,8 +76,9 @@ print(Y)
 print(Y)
 
 from sklearn.neural_network import MLPClassifier
+from sklearn.metrics import classification_report,confusion_matrix,accuracy_score
 
-classifier = MLPClassifier(hidden_layer_sizes=(100, ),  # EDIT CONTROLS HERE
+classifier = MLPClassifier(hidden_layer_sizes=(100, ),
                            activation='relu',
                            solver='adam',
                            alpha=0.0001,
@@ -106,15 +102,22 @@ classifier = MLPClassifier(hidden_layer_sizes=(100, ),  # EDIT CONTROLS HERE
                            n_iter_no_change=10,
                            max_fun=15000)
 
+
 for i in range(train):
     X_train=X[i]
     X_train=X_train.astype(np.float64)
     print(X_train)
     print(classifier.fit([X_train], [Y[i]]))
 
+num = 0
+dem = 0
+
 for i in range(inter-train):
     X_Test=X[i+train]
     X_Test=X_Test.astype(np.float64)
-    print(str(classifier.predict([X_Test])) + str(Y[i+int(train)]))
+    #print(str(classifier.predict([X_Test])) + str(Y[i+int(train)]))
+    if (int(classifier.predict([X_Test]))) == int(Y[i+int(train)]):
+        num+=1
+    dem+=1
 
-print("END")
+print(str(num/dem*100)+"% Accuracy")
