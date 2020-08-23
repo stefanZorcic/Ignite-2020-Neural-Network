@@ -124,7 +124,6 @@ classifier = MLPClassifier(hidden_layer_sizes=(100,2),
 
 counter=0
 
-
 X_train=X
 print(X_train)
 print(Y)
@@ -136,7 +135,6 @@ print(Y)
 classifier.fit(X_train, Y)
 counter+=1;
 print("YYYAYYAYAYYAYAYYA")
-
 
 
 
