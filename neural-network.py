@@ -5,9 +5,9 @@ Y = [0]*0
 
 
 
-inter = 3
+inter = 10
 
-train = 1    # Number of how much of data is test data
+train = 5    # Number of how much of data is test data
 
 
 with open('training_data.csv') as csvDataFile:
@@ -78,8 +78,8 @@ print(Y)
 from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import classification_report,confusion_matrix,accuracy_score
 
-classifier = MLPClassifier(hidden_layer_sizes=(100, ),
-                           activation='relu',
+classifier = MLPClassifier(hidden_layer_sizes=(10,1 ),
+                           activation='tanh',
                            solver='adam',
                            alpha=0.0001,
                            batch_size='auto',
