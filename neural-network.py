@@ -3,31 +3,33 @@ import csv
 u=0
 
 temp = [0] * 0
+#This array is the machine's answer for the training data
 X = [0] * 0
+#This array is the right answer for the training data
 Y = [0] * 0
 
-inter = 60
+inter = 60 
 
 train = 50  # Number of how much of data is test data
-
+#this is how we read in the training data
 with open('training_data.csv') as csvDataFile:
     csvReader = csv.reader(csvDataFile)
     for row in csvReader:
         temp.append(row)
-
+#these are all the libraries we are bringing in for this program
 import string
 import nltk
 from nltk.corpus import words
 from nltk.corpus import stopwords
 from nltk.corpus import product_reviews_1 as pro
 import numpy as np
-
+#downloading specific parts of the library
 nltk.download('words')
 nltk.download('punkt')
 nltk.download('stopwords')
 nltk.download('product_reviews_1')
 
-
+#binary search to find our element within a sorted list of words
 def find(L, target):
     start = 0
     end = len(L) - 1
@@ -42,9 +44,9 @@ def find(L, target):
         else:
             return midpoint
 
-
+#stop words, which are words that have no meaning in sentiment analysis, e.g. I, Me, We, Have
 stop_words = set(stopwords.words('english'))
-
+#reading in the sentence and tokenizing it
 for i in range(inter):
     indices = [0] * 0
     # Text preprocessing
@@ -106,10 +108,10 @@ for i in range(inter):
 
     u+=1
     print(u)
-
+    #changing the indices list to an array
     indices = np.array(indices)
     indices = indices.astype(np.float64)
-
+    
     X.append(indices)
 
 Y = np.array(Y)
@@ -120,7 +122,7 @@ print(Y)
 
 from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
-
+#the mlp learning machine
 classifier = MLPClassifier(hidden_layer_sizes=(10, 10),
                            activation='relu',
                            solver='adam',
@@ -159,7 +161,7 @@ while s:
     if(input()=="x"):
         s=False
 '''
-
+#training the data
 X_train = X
 # X_train=X_train.astype(np.float64)
 # print(X_train)
