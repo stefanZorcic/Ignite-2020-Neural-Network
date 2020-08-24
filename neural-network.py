@@ -31,9 +31,11 @@ nltk.download('product_reviews_1')
 
 #binary search to find our element within a sorted list of words
 def find(L, target):
+    #lower bound which is the start of the list
     start = 0
+    #upper bound which is the end of the list
     end = len(L) - 1
-
+    #the while statement that will update the start/end for each iteration
     while start <= end:
         middle = (start + end) / 2
         midpoint = L[int(middle)]
@@ -89,14 +91,17 @@ for i in range(inter):
 
     for i in range(int(len(text))):
         try:
+            #binary searching to find our item in the lits
             o = (find(word_list, text[i]))
             q = int(indices[o])
             q += 1.0 * i;
+            #inserting it into indices
             indices.pop(int(0 - 1))
             indices.insert(int(o - 1), str(q))
             q = 0
 
         except TypeError:
+            #when the item isn't found, we do this
             indices.pop(73833 - 1)
             z += 1.0 * i
             indices.append(str(z))
