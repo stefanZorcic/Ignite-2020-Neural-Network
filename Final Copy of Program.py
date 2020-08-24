@@ -9,12 +9,13 @@ inter = 10
 
 train = 5 # Number of how much of data is test data
 
-
+#this is how we read in the training data
 with open('training_data.csv') as csvDataFile:
     csvReader = csv.reader(csvDataFile)
     for row in csvReader:
         temp.append(row)
 
+#these are all the libraries we are bringing in for this program
 import string
 import nltk
 from nltk.corpus import words
@@ -27,10 +28,13 @@ nltk.download('punkt')
 nltk.download('stopwords')
 nltk.download('product_reviews_1')
 
+
+#stop words, which are words that have no meaning in sentiment analysis, e.g. I, Me, We, Have
 stop_words=set(stopwords.words('english'))
 
 word_list = pro.words()
 
+#reading in the sentence and tokenizing it
 for i in range(inter):
     indices=[0]*0
     # Text preprocessing
@@ -66,6 +70,8 @@ for i in range(inter):
 
     for i in range(int(len(text))):
         try:
+            
+            #binary searching to find our item in the lits
             o = (word_list.index(text[i]))
             q = int(indices[o])
             q+=1.0*i;
@@ -74,6 +80,8 @@ for i in range(inter):
             q=0
 
         except ValueError:
+            
+            #when the item isn't found, we do this
             indices.pop(73833-1)
             z+=1.0*i
             indices.append(str(z))
@@ -98,6 +106,7 @@ print(Y)
 from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import classification_report,confusion_matrix,accuracy_score
 
+#the mlp learning machine
 classifier = MLPClassifier(hidden_layer_sizes=(10,2),
                            activation='relu',
                            solver='lbfgs',
@@ -124,6 +133,7 @@ classifier = MLPClassifier(hidden_layer_sizes=(10,2),
 
 counter=0
 
+#training the data
 X_train=X
 print(X_train)
 print(Y)
