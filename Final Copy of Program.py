@@ -1,34 +1,46 @@
-#Final copy of the program
 import csv
+
+# The list of input words
 temp=[0]*0
+
+# Positive or negative verdict
 X = [0]*0
 Y = [0]*0
 
-u=0
+u=0 # (Stefan comment this)
 
-inter = 10
+inter = 10 # Number of lines of testing datasets
 
-train = 5 # Number of how much of data is test data
+train = 5 # Number of lines of training data
 
-#this is how we read in the training data
+# Read in the training data through the CSV file
 with open('training_data.csv') as csvDataFile:
     csvReader = csv.reader(csvDataFile)
+
+    # Read in each row of the input
     for row in csvReader:
         temp.append(row)
 
-#these are all the libraries we are bringing in for this program
+#All the libraries we are bringing in for this program
 import string
-import nltk
+import nltk # The Natural Language tool kit used to include the English Dictionary of words
 from nltk.corpus import words
 from nltk.corpus import stopwords
 from nltk.corpus import product_reviews_1 as pro
 import numpy as np
 
+# Download all modules
 nltk.download('words')
 nltk.download('punkt')
 nltk.download('stopwords')
 nltk.download('product_reviews_1')
-#binary search to find our element within a sorted list of words
+
+
+# In this section we will create a frequency array for all the words in the input. Each word will
+# have its own cell in the array
+# We will first sort the array then use binary search for each tokenized word to update the word count
+
+# Binary search to find our element within a sorted list of words
 def find(L, target):
     #lower bound which is the start of the list
     start = 0
@@ -38,6 +50,8 @@ def find(L, target):
     while start <= end:
         middle = (start + end) / 2
         midpoint = L[int(middle)]
+
+        # Test to see where the current guess is compared to the desired target
         if midpoint > target:
             end = middle - 1
         elif midpoint < target:
@@ -45,7 +59,8 @@ def find(L, target):
         else:
             return midpoint
 
-#stop words, which are words that have no meaning in sentiment analysis, e.g. I, Me, We, Have
+# "Stop words", which are words that have no meaning in sentiment analysis, e.g. I, Me, We, Have
+# These words will be set at a significantly lower value
 stop_words=set(stopwords.words('english'))
 
 word_list = pro.words()
@@ -53,6 +68,7 @@ word_list = pro.words()
 #reading in the sentence and tokenizing it
 for i in range(inter):
     indices=[0]*0
+
     # Text preprocessing
     text = str(temp[i+1][2])
 
@@ -61,14 +77,17 @@ for i in range(inter):
     else:
         Y.append(0)
 
-    text = text.lower()
-    remove_digits = str.maketrans('', '', string.digits)
+    # Clean up the text (removing special characters and turning characters into lower case)
+    text = text.lower() # make the text all lower case
+    remove_digits = str.maketrans('', '', string.digits) # Remove all numbers
     text = text.translate(remove_digits)
-    text = text.translate(str.maketrans('', '', string.punctuation))
-    text = text.strip()
+    text = text.translate(str.maketrans('', '', string.punctuation)) # Remove all punctuation
+    text = text.strip() # Trim the string of leading and trailing spaces
 
+    # Tokenize the string into separate words
     word_tokens = nltk.word_tokenize(text)
 
+    # Filter the sentence of all stop words
     filtered_sentence = [w for w in word_tokens if not w in stop_words]
 
     filtered_sentence = []
@@ -79,6 +98,7 @@ for i in range(inter):
 
     text = filtered_sentence
 
+    # The index list for all input words
     indices = ['0.01'] * 73833
 
 
@@ -118,11 +138,12 @@ Y = np.array(Y)
 
 print(Y)
 
+# include sklearn neural network modules
 from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import classification_report,confusion_matrix,accuracy_score
 
 #the mlp learning machine
-classifier = MLPClassifier(hidden_layer_sizes=(10,2),
+classifier = MLPClassifier(hidden_layer_sizes=(10,2), # parameters to be entered into the machine
                            activation='relu',
                            solver='lbfgs',
                            alpha=0.05,
@@ -148,7 +169,7 @@ classifier = MLPClassifier(hidden_layer_sizes=(10,2),
 
 counter=0
 
-#training the data
+# Training the data
 X_train=X
 print(X_train)
 print(Y)
@@ -159,23 +180,23 @@ print(Y)
 
 classifier.fit(X_train, Y)
 counter+=1;
-print("YYYAYYAYAYYAYAYYA")
 
-
-
+# An accuracy counter which will determine accuracy of the machine later on
 num = 0
 dem = 0
 
+# Determine verdics for each of the input data
 for i in range(inter-train):
     X_Test=X[i+train]
     X_Test=X_Test.astype(np.float64)
-    #print(str(classifier.predict([X_Test])) + str(Y[i+int(train)]))
+    print(str(classifier.predict([X_Test])) + str(Y[i+int(train)]))
     if (int(classifier.predict([X_Test]))) == int(Y[i+int(train)]):
         num+=1
     dem+=1
 
     print((int(classifier.predict([X_Test]))), int(Y[i+int(train)]))
 
+# Ouput the machine accuracy based on answers
 print(str(num/dem*100)+"% Accuracy")
 
 temp=[0]*0
@@ -183,7 +204,7 @@ X = [0]*0
 
 u=0
 
-
+# Write answers to CSV file
 with open('contestant_judgment.csv') as csvDataFile:
     csvReader = csv.reader(csvDataFile)
     for row in csvReader:
